@@ -27,6 +27,10 @@
             font-size: 1.2em;
             font-weight: bold;
         }
+        .loading {
+            display: none;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -36,11 +40,14 @@
         <img id="preview" style="display: none;">
     </div>
     <div id="result"></div>
+    <div id="loading" class="loading">Tahmin yapılıyor...</div>
 
     <script>
+        const API_URL = 'jieuna189goeun.me'; // Buraya kendi domain adresinizi yazın
         const imageInput = document.getElementById('imageInput');
         const preview = document.getElementById('preview');
         const result = document.getElementById('result');
+        const loading = document.getElementById('loading');
 
         imageInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
@@ -49,21 +56,32 @@
                 preview.style.display = 'block';
                 preview.src = URL.createObjectURL(file);
 
+                // Loading mesajını göster
+                loading.style.display = 'block';
+                result.textContent = '';
+
                 // FormData oluştur
                 const formData = new FormData();
                 formData.append('file', file);
 
                 try {
                     // API'ye istek gönder
-                    const response = await fetch('http://localhost:8000/uploadfile/', {
+                    const response = await fetch(API_URL, {
                         method: 'POST',
                         body: formData
                     });
                     
+                    if (!response.ok) {
+                        throw new Error('Sunucu hatası: ' + response.status);
+                    }
+
                     const data = await response.json();
                     result.textContent = `Tahmin: ${data.predicted_class}`;
                 } catch (error) {
                     result.textContent = 'Bir hata oluştu: ' + error.message;
+                } finally {
+                    // Loading mesajını gizle
+                    loading.style.display = 'none';
                 }
             }
         });
