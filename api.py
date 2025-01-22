@@ -4,7 +4,6 @@ from tensorflow.keras.preprocessing import image
 from io import BytesIO
 from fastapi import FastAPI, File, UploadFile
 from tensorflow.keras.models import load_model
-from fastapi.middleware.cors import CORSMiddleware
 
 
 model = load_model("/Users/enesdemir/Desktop/neuralnetwork/model.keras")
@@ -31,11 +30,3 @@ async def create_upload_file(file: UploadFile = File(...)):
 
     return {"filename": file.filename, "predicted_class": predicted_class_name}
 
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
